@@ -35,6 +35,8 @@ function drawQuaCi(context, sc1 : number, sc2 : number) {
 class StepCircPathStage {
     canvas : HTMLCanvasElement = document.createElement('canvas')
     context : CanvasRenderingContext2D
+    stepCircPath : StepCircPath = new StepCircPath()
+    animator : Animator = new Animator()
     constructor() {
         this.initCanvas()
     }
@@ -49,11 +51,19 @@ class StepCircPathStage {
     render() {
         this.context.fillStyle = '#212121'
         this.context.fillRect(0, 0, w, h)
+        this.stepCircPath.draw(this.context)
     }
 
     handleTap() {
         this.canvas.onmousedown = () => {
-
+            this.stepCircPath.startUpdating(() => {
+                this.animator.start(() => {
+                    this.render()
+                    this.stepCircPath.update(() => {
+                        this.animator.stop()
+                    })
+                })
+            })
         }
     }
 }
