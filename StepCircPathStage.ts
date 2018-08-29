@@ -5,11 +5,11 @@ interface Point {
     y : number
 }
 function getGap() : number {
-    return (w / (nodes + 1))
+    return (Math.min(w, h) / (nodes))
 }
 
 function getXY(i : number) : Point {
-    return {x: (i + 1) * getGap(), y : h - ((nodes + 1) * getGap()) + (i + 1) *  getGap()}
+    return {x: (i + 1) * getGap(), y : h - ((nodes) * getGap()) + (i + 1) *  getGap()}
 }
 
 function drawQuaCi(context, sc1 : number, sc2 : number) {
@@ -65,6 +65,12 @@ class StepCircPathStage {
                 })
             })
         }
+    }
+
+    static init() {
+        const stage : StepCircPathStage = new StepCircPathStage()
+        stage.render()
+        stage.handleTap()
     }
 }
 
@@ -139,6 +145,9 @@ class SCPNode {
         drawQuaCi(context, sc1, sc2)
         context.fillRect(-gap, -gap, gap, gap)
         context.restore()
+        if (this.next) {
+            this.next.draw(context)
+        }
     }
 
     update(cb : Function) {
@@ -163,11 +172,13 @@ class SCPNode {
 }
 
 class StepCircPath {
-    curr : SCPNode = new SCPNode(0)
+    root : SCPNode = new SCPNode(0)
+    curr : SCPNode = this.root
     dir : number = 1
 
     draw(context : CanvasRenderingContext2D) {
-        this.curr.draw(context)
+        this.root.draw(context)
+        //context.fillRect(getXY(nodes).x - getGap(), getXY(nodes).y - getGap(), getGap(), getGap())
     }
 
     update(cb : Function) {
